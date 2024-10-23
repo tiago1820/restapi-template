@@ -2,7 +2,7 @@ import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGenerat
 import { Curso } from './cursosModel';
 
 @Entity()
-export class Profesor {
+export class Profesor extends BaseEntity {
 
     @PrimaryGeneratedColumn()
     id: number;
