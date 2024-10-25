@@ -1,9 +1,9 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
-import estudiantesRoutes from './routes/estudiantesRoutes';
-import profesoresRoutes from './routes/profesoresRoutes';
-import cursosRoutes from './routes/cursosRoutes';
+import studentsRoutes from './routes/students.routes';
+import teachersRoutes from './routes/teachers.routes';
+import coursesRoutes from './routes/courses.routes';
 
 const app = express();
 
@@ -16,8 +16,8 @@ app.get('/', (req: Request, res: Response) => {
     res.send('Hola mundo');
 });
 
-app.use('/estudiantes', estudiantesRoutes);
-app.use('/profesores', profesoresRoutes);
-app.use('/cursos', cursosRoutes);
+app.use('/students', studentsRoutes);
+app.use('/teachers', teachersRoutes);
+app.use('/courses', coursesRoutes);
 
 export default app;
