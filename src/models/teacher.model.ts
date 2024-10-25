@@ -1,8 +1,8 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Curso } from './cursosModel';
+import { Course } from './course.model';
 
 @Entity()
-export class Profesor extends BaseEntity {
+export class Teacher extends BaseEntity {
 
     @PrimaryGeneratedColumn()
     id: number;
@@ -11,19 +11,19 @@ export class Profesor extends BaseEntity {
     dni: String;
 
     @Column()
-    nombre: String;
+    firstName: String;
 
     @Column()
-    apellido: String;
+    lastName: String;
 
     @Column()
     email: String;
 
     @Column()
-    profesion: String;
+    profession: String;
 
     @Column()
-    telefono: String;
+    phone: String;
 
     @CreateDateColumn()
     createdAt: Date;
@@ -31,6 +31,6 @@ export class Profesor extends BaseEntity {
     @UpdateDateColumn()
     updatedAt: Date;
 
-    @OneToMany(() => Curso, (curso) => curso.profesor)
-    cursos: Curso[]
+    @OneToMany(() => Course, (course) => course.teacher)
+    courses: Course[]
 }

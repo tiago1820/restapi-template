@@ -1,7 +1,7 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
-@Entity('estudiantes')
-export class Estudiante extends BaseEntity {
+@Entity('students')
+export class Student extends BaseEntity {
 
     @PrimaryGeneratedColumn()
     id: number;
@@ -10,10 +10,10 @@ export class Estudiante extends BaseEntity {
     dni: String;
 
     @Column()
-    nombre: String;
+    firstName: String;
 
     @Column()
-    apellido: String;
+    lastName: String;
 
     @Column()
     email: String;
