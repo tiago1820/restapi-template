@@ -1,12 +1,18 @@
 import { Request, Response } from 'express';
-import { Student } from '../models/student.model';
+import studentsService from '../services/students.service';
 
 class StudentsController {
-   
+
     async index(req: Request, res: Response) {
+
         try {
-            const data = await Student.find();
+            const data = await studentsService.index();
+            if (data.length === 0) {
+                res.status(200).json({ message: 'No characters found.' });
+                return;
+            }
             res.status(200).json(data);
+
         } catch (error) {
             if (error instanceof Error)
                 res.status(500).send(error.message);
@@ -16,11 +22,8 @@ class StudentsController {
     async show(req: Request, res: Response) {
         const { id } = req.params;
         try {
-            const registro = await Student.findOneBy({ id: Number(id) });
-            if (!registro) {
-                throw new Error('Student not found.');
-            }
-            res.status(200).json(registro);
+            const data = await studentsService.show(Number(id));
+            res.status(200).json(data);
         } catch (error) {
             if (error instanceof Error)
                 res.status(500).send(error.message);
@@ -29,8 +32,8 @@ class StudentsController {
 
     async store(req: Request, res: Response) {
         try {
-            const registro = await Student.save(req.body);
-            res.status(201).json(registro);
+            const data = await studentsService.store(req.body);
+            res.status(201).json(data);
         } catch (error) {
             if (error instanceof Error)
                 res.status(500).send(error.message);
@@ -40,13 +43,9 @@ class StudentsController {
     async update(req: Request, res: Response) {
         const { id } = req.params;
         try {
-            const registro = await Student.findOneBy({ id: Number(id) });
-            if (!registro) {
-                throw new Error('Student not found.');
-            }
-            await Student.update({ id: Number(id) }, req.body);
-            const registroActualizado = await Student.findOneBy({ id: Number(id) });
-            res.status(200).json(registroActualizado);
+            const data = await studentsService.update(Number(id), req.body);
+            res.status(200).json(data);
+
         } catch (error) {
             if (error instanceof Error)
                 res.status(500).send(error.message);
@@ -56,12 +55,8 @@ class StudentsController {
     async destroy(req: Request, res: Response) {
         const { id } = req.params;
         try {
-            const registro = await Student.findOneBy({ id: Number(id) });
-            if (!registro) {
-                throw new Error('Student not found.');
-            }
-            await Student.delete({ id: Number(id) });
-            res.send(204);
+            const message = await studentsService.destroy(Number(id));
+            res.status(200).json({ message });
         } catch (error) {
             if (error instanceof Error)
                 res.status(500).send(error.message);
