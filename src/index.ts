@@ -1,5 +1,5 @@
 import app from './app';
-import { AppDataSource } from './db/conexion';
+import { AppDataSource } from './databases/connection';
 
 async function main() {
     try {
