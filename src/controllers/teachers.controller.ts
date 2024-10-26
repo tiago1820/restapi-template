@@ -1,11 +1,12 @@
 import { Request, Response } from 'express';
 import { Teacher } from '../models/teacher.model';
+import teachersService from '../services/teachers.service';
 
 class TeachersController {
-    
+
     async index(req: Request, res: Response) {
         try {
-            const data = await Teacher.find();
+            const data = await teachersService.index();
             res.status(200).json(data);
         } catch (error) {
             if (error instanceof Error)
@@ -16,11 +17,8 @@ class TeachersController {
     async show(req: Request, res: Response) {
         const { id } = req.params;
         try {
-            const registro = await Teacher.findOneBy({ id: Number(id) });
-            if (!registro) {
-                throw new Error('Teacher not found.');
-            }
-            res.status(200).json(registro);
+            const data = await teachersService.show(Number(id));
+            res.status(200).json(data);
         } catch (error) {
             if (error instanceof Error)
                 res.status(500).send(error.message);
@@ -29,8 +27,8 @@ class TeachersController {
 
     async store(req: Request, res: Response) {
         try {
-            const registro = await Teacher.save(req.body);
-            res.status(201).json(registro);
+            const data = await teachersService.store(req.body);
+            res.status(201).json(data);
         } catch (error) {
             if (error instanceof Error)
                 res.status(500).send(error.message);
@@ -40,13 +38,9 @@ class TeachersController {
     async update(req: Request, res: Response) {
         const { id } = req.params;
         try {
-            const registro = await Teacher.findOneBy({ id: Number(id) });
-            if (!registro) {
-                throw new Error('Teacher not found.');
-            }
-            await Teacher.update({ id: Number(id) }, req.body);
-            const registroActualizado = await Teacher.findOneBy({ id: Number(id) });
-            res.status(200).json(registroActualizado);
+            const data = await teachersService.update(Number(id), req.body);
+            res.status(200).json(data);
+
         } catch (error) {
             if (error instanceof Error)
                 res.status(500).send(error.message);
@@ -56,12 +50,9 @@ class TeachersController {
     async destroy(req: Request, res: Response) {
         const { id } = req.params;
         try {
-            const registro = await Teacher.findOneBy({ id: Number(id) });
-            if (!registro) {
-                throw new Error('Teacher not found.');
-            }
-            await Teacher.delete({ id: Number(id) });
-            res.send(204);
+            const message = await teachersService.destroy(Number(id));
+            res.status(200).json({ message });
+
         } catch (error) {
             if (error instanceof Error)
                 res.status(500).send(error.message);
