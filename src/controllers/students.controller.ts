@@ -18,7 +18,7 @@ class StudentsController {
         try {
             const registro = await Student.findOneBy({ id: Number(id) });
             if (!registro) {
-                throw new Error('Estudiante no encontrado');
+                throw new Error('Student not found.');
             }
             res.status(200).json(registro);
         } catch (error) {
@@ -42,7 +42,7 @@ class StudentsController {
         try {
             const registro = await Student.findOneBy({ id: Number(id) });
             if (!registro) {
-                throw new Error('Estudiante no encontrado');
+                throw new Error('Student not found.');
             }
             await Student.update({ id: Number(id) }, req.body);
             const registroActualizado = await Student.findOneBy({ id: Number(id) });
@@ -58,7 +58,7 @@ class StudentsController {
         try {
             const registro = await Student.findOneBy({ id: Number(id) });
             if (!registro) {
-                throw new Error('Estudiante no encontrado');
+                throw new Error('Student not found.');
             }
             await Student.delete({ id: Number(id) });
             res.send(204);

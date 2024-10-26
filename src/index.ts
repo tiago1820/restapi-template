@@ -4,9 +4,9 @@ import { AppDataSource } from './db/conexion';
 async function main() {
     try {
         await AppDataSource.initialize();
-        console.log('Base de datos conectada');
+        console.log('Database connected.');
         app.listen(6505, () => {
-            console.log("Server activo");
+            console.log("Server running.");
         });
     } catch (error) {
         if(error instanceof Error){

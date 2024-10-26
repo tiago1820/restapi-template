@@ -21,7 +21,7 @@ class CoursesController {
         try {
             const registro = await Course.findOne({ where: { id: Number(id) }, relations: { teacher: true, students: true } });
             if (!registro) {
-                throw new Error('Curso no encontrado');
+                throw new Error('Course not found.');
             }
 
             res.status(200).json(registro);
@@ -36,19 +36,17 @@ class CoursesController {
             const { teacher } = req.body;
 
             if (!teacher || isNaN(Number(teacher))) {
-                throw new Error('El ID del profesor es inválido');
+                throw new Error("The teacher's ID is invalid.");
             }
 
             const result = await Teacher.findOneBy({ id: Number(teacher) });
             if (!result) {
-                throw new Error('Profesor no encontrado');
+                throw new Error('Teacher not found.');
             }
 
             const registro = await Course.save(req.body);
             res.status(201).json(registro);
         } catch (err) {
-            console.log("AQUI", err);
-
             if (err instanceof Error)
                 res.status(500).send(err.message);
         }
@@ -61,12 +59,12 @@ class CoursesController {
 
             const result = await Teacher.findOneBy({ id: Number(teacher) });
             if (!result) {
-                throw new Error('Profesor no encontrado');
+                throw new Error('Teacher not found.');
             }
 
             const registro = await Course.findOneBy({ id: Number(id) });
             if (!registro) {
-                throw new Error('Curso no encontrado');
+                throw new Error('Course not found.');
             }
             await Course.update({ id: Number(id) }, req.body);
             const registroActualizado = await Course.findOne({ where: { id: Number(id) }, relations: { teacher: true, students: true } });
@@ -82,7 +80,7 @@ class CoursesController {
         try {
             const registro = await Course.findOneBy({ id: Number(id) });
             if (!registro) {
-                throw new Error('Curso no encontrado');
+                throw new Error('Course not found.');
             }
             await Course.delete({ id: Number(id) });
             res.status(204);
@@ -98,7 +96,7 @@ class CoursesController {
             const { student_id, course_id } = req.body;
             const student = await Student.findOneBy({ id: Number(student_id) });
             if (!student) {
-                throw new Error('Estudiante no encontrado');
+                throw new Error('Student not found.');
             }
 
             const course = await Course.findOne({
@@ -107,11 +105,11 @@ class CoursesController {
             });
 
             if (!course) {
-                throw new Error('Curso no encontrado');
+                throw new Error('Course not found.');
             }
 
             if (course.students.some(existingStudent => existingStudent.id === student_id)) {
-                throw new Error('El estudiante ya está asociado a este curso');
+                throw new Error('The student is already enrolled in this course.');
             }
 
             course.students.push(student);

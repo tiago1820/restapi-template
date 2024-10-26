@@ -11,9 +11,13 @@ app.use(express.json());
 app.use(morgan('dev'));
 app.use(cors());
 
-app.get('/', (req: Request, res: Response) => {
-    console.log('Hola mundo');
-    res.send('Hola mundo');
+app.get('/api', (req: Request, res: Response) => {
+    const data = {
+        "students": "http://localhost:3000/api/students",
+        "teaches": "http://localhost:3000/api/teaches",
+        "courses": "http://localhost:3000/api/courses",
+    }
+    res.send(data);
 });
 
 app.use('/students', studentsRoutes);
