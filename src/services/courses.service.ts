@@ -31,19 +31,10 @@ class CoursesService {
         }
     }
 
-    async store(teacher_id: number, course: CourseType) {
+    async store(course: CourseType) {
 
         try {
-            const teacher = await Teacher.findOneBy({ id: teacher_id });
-            if (!teacher) {
-                throw new Error('Teacher not found.');
-            }
-
-            const newCourse = Course.create({
-                ...course,
-                teacher: teacher
-            });
-
+            const newCourse = Course.create(course);
             return newCourse.save();
 
         } catch (error) {
@@ -51,27 +42,16 @@ class CoursesService {
         }
     }
 
-    async update(teacher_id: number, course_id: number, course: CourseType) {
+    async update(course_id: number, course: CourseType) {
 
         try {
-            const existingTeacher = await Teacher.findOneBy({ id: teacher_id });
-            if (!existingTeacher) {
-                throw new Error('Teacher not found.');
-            }
-
             const existingCourse = await Course.findOneBy({ id: course_id });
             if (!existingCourse) {
                 throw new Error('Course not found.');
             }
 
             await Course.update({ id: course_id }, course);
-
-            const courseUpdated = await Course.findOne({
-                where: { id: course_id },
-                relations: { teacher: true, students: true }
-            });
-
-            return courseUpdated;
+            return { ...existingCourse, ...course };
 
         } catch (error) {
             throw new Error('Error saving the course to the database');
@@ -81,6 +61,7 @@ class CoursesService {
     async destroy(id: number) {
         try {
             const existingCourse = await Course.findOneBy({ id });
+            
             if (!existingCourse) {
                 throw new Error('Course not found.');
             }
@@ -140,7 +121,7 @@ class CoursesService {
             course.teacher = teacher;
             const data = await Course.save(course);
             return data;
-            
+
         } catch (error) {
             throw new Error('Error associating the teacher with the course');
         }
