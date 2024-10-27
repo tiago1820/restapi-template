@@ -5,7 +5,8 @@ const router = express.Router();
 router.get('/', coursesController.index);
 
 router.post('/', coursesController.store);
-router.post('/associate', coursesController.associateStudent);
+router.post('/associate-student', coursesController.associateStudent);
+router.post('/associate-teacher', coursesController.associateTeacher);
 
 router.route('/:id')
     .get(coursesController.show)
