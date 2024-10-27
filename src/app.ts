@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import studentsRoutes from './routes/students.routes';
@@ -23,5 +23,13 @@ app.get('/api', (req: Request, res: Response) => {
 app.use('/students', studentsRoutes);
 app.use('/teachers', teachersRoutes);
 app.use('/courses', coursesRoutes);
+
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+    if (err instanceof Error) {
+        res.status(500).json({ message: err.message, error: 'Internal server error' });
+    } else {
+        res.status(500).json({ message: 'Unknown error occurred', error: 'Internal server error' });
+    }
+});
 
 export default app;

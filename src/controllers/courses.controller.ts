@@ -1,9 +1,9 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import coursesService from '../services/courses.service';
 
 class CoursesController {
 
-    async index(req: Request, res: Response) {
+    async index(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const data = await coursesService.index();
             if (data.length === 0) {
@@ -12,99 +12,79 @@ class CoursesController {
             }
             res.status(200).json(data);
 
-        } catch (err) {
-            if (err instanceof Error)
-                res.status(500).send(err.message);
+        } catch (error) {
+            next(error);
         }
 
     }
 
-    async show(req: Request, res: Response) {
+    async show(req: Request, res: Response, next: NextFunction): Promise<void> {
         const { id } = req.params;
         try {
             const data = await coursesService.show(Number(id));
             res.status(200).json(data);
 
-        } catch (err) {
-            if (err instanceof Error)
-                res.status(500).send(err.message);
+        } catch (error) {
+            next(error);
         }
     }
 
-    async store(req: Request, res: Response) {
-        const { teacher_id } = req.body;
+    async store(req: Request, res: Response, next: NextFunction): Promise<void> {
         const course = req.body;
 
-        if (!teacher_id || isNaN(Number(teacher_id))) {
-            throw new Error("The teacher's ID is invalid.");
-        }
-
         try {
-            const data = await coursesService.store(Number(teacher_id), course);
+            const data = await coursesService.store(course);
             res.status(201).json(data);
 
-        } catch (err) {
-            if (err instanceof Error)
-                res.status(500).send(err.message);
+        } catch (error) {
+            next(error);
         }
     }
 
-    async update(req: Request, res: Response) {
+    async update(req: Request, res: Response, next: NextFunction): Promise<void> {
         const course = req.body;
         const { id: course_id } = req.params;
-        const { teacher } = req.body;
-
-        if (!teacher || isNaN(Number(teacher))) {
-            throw new Error("The teacher's ID is invalid.");
-        }
 
         try {
-            const data = await coursesService.update(
-                Number(teacher),
-                Number(course_id), course);
+            const data = await coursesService.update(Number(course_id), course);
             res.status(200).json(data);
 
-        } catch (err) {
-            if (err instanceof Error)
-                res.status(500).send(err.message);
+        } catch (error) {
+            next(error);
         }
     }
 
-    async destroy(req: Request, res: Response) {
+    async destroy(req: Request, res: Response, next: NextFunction): Promise<void> {
         const { id } = req.params;
         try {
             const message = await coursesService.destroy(Number(id));
             res.status(200).json({ message });
 
         } catch (error) {
-            if (error instanceof Error) {
-                res.status(500).send(error.message);
-            }
+            next(error);
         }
     }
 
-    async associateStudent(req: Request, res: Response) {
+    async associateStudent(req: Request, res: Response, next: NextFunction): Promise<void> {
         const { student_id, course_id } = req.body;
 
         try {
             const data = await coursesService.associateStudent(Number(course_id), Number(student_id));
             res.status(200).json(data);
 
-        } catch (err) {
-            if (err instanceof Error)
-                res.status(500).send(err.message);
+        } catch (error) {
+            next(error);
         }
     }
 
-    async associateTeacher(req: Request, res: Response) {
+    async associateTeacher(req: Request, res: Response, next: NextFunction): Promise<void> {
         const { course_id, teacher_id } = req.body;
 
         try {
             const data = await coursesService.associateTeacher(Number(course_id), Number(teacher_id));
             res.status(200).json(data);
         } catch (error) {
-            if (error instanceof Error)
-                res.status(500).send(error.message);
+            next(error);
         }
     }
 
