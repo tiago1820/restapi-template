@@ -1,14 +1,17 @@
 import { Request, Response } from "express";
-import { Course } from "../models/course.model";
-import { Teacher } from "../models/teacher.model";
-import { Student } from "../models/student.model";
+import coursesService from '../services/courses.service';
 
 class CoursesController {
 
     async index(req: Request, res: Response) {
         try {
-            const data = await Course.find({ relations: { teacher: true, students: true } });
+            const data = await coursesService.index();
+            if (data.length === 0) {
+                res.status(200).json({ message: 'No courses found.' });
+                return;
+            }
             res.status(200).json(data);
+
         } catch (err) {
             if (err instanceof Error)
                 res.status(500).send(err.message);
@@ -19,12 +22,9 @@ class CoursesController {
     async show(req: Request, res: Response) {
         const { id } = req.params;
         try {
-            const registro = await Course.findOne({ where: { id: Number(id) }, relations: { teacher: true, students: true } });
-            if (!registro) {
-                throw new Error('Course not found.');
-            }
+            const data = await coursesService.show(Number(id));
+            res.status(200).json(data);
 
-            res.status(200).json(registro);
         } catch (err) {
             if (err instanceof Error)
                 res.status(500).send(err.message);
@@ -32,20 +32,17 @@ class CoursesController {
     }
 
     async store(req: Request, res: Response) {
+        const { teacher_id } = req.body;
+        const course = req.body;
+
+        if (!teacher_id || isNaN(Number(teacher_id))) {
+            throw new Error("The teacher's ID is invalid.");
+        }
+
         try {
-            const { teacher } = req.body;
+            const data = await coursesService.store(Number(teacher_id), course);
+            res.status(201).json(data);
 
-            if (!teacher || isNaN(Number(teacher))) {
-                throw new Error("The teacher's ID is invalid.");
-            }
-
-            const result = await Teacher.findOneBy({ id: Number(teacher) });
-            if (!result) {
-                throw new Error('Teacher not found.');
-            }
-
-            const registro = await Course.save(req.body);
-            res.status(201).json(registro);
         } catch (err) {
             if (err instanceof Error)
                 res.status(500).send(err.message);
@@ -53,22 +50,20 @@ class CoursesController {
     }
 
     async update(req: Request, res: Response) {
-        const { id } = req.params;
+        const course = req.body;
+        const { id: course_id } = req.params;
+        const { teacher } = req.body;
+
+        if (!teacher || isNaN(Number(teacher))) {
+            throw new Error("The teacher's ID is invalid.");
+        }
+
         try {
-            const { teacher } = req.body;
+            const data = await coursesService.update(
+                Number(teacher),
+                Number(course_id), course);
+            res.status(200).json(data);
 
-            const result = await Teacher.findOneBy({ id: Number(teacher) });
-            if (!result) {
-                throw new Error('Teacher not found.');
-            }
-
-            const registro = await Course.findOneBy({ id: Number(id) });
-            if (!registro) {
-                throw new Error('Course not found.');
-            }
-            await Course.update({ id: Number(id) }, req.body);
-            const registroActualizado = await Course.findOne({ where: { id: Number(id) }, relations: { teacher: true, students: true } });
-            res.status(200).json(registroActualizado);
         } catch (err) {
             if (err instanceof Error)
                 res.status(500).send(err.message);
@@ -78,43 +73,22 @@ class CoursesController {
     async destroy(req: Request, res: Response) {
         const { id } = req.params;
         try {
-            const registro = await Course.findOneBy({ id: Number(id) });
-            if (!registro) {
-                throw new Error('Course not found.');
+            const message = await coursesService.destroy(Number(id));
+            res.status(200).json({ message });
+
+        } catch (error) {
+            if (error instanceof Error) {
+                res.status(500).send(error.message);
             }
-            await Course.delete({ id: Number(id) });
-            res.status(204);
-        } catch (err) {
-            if (err instanceof Error)
-                res.status(500).send(err.message);
         }
     }
 
     async associateStudent(req: Request, res: Response) {
-        
+        const { student_id, course_id } = req.body;
+
         try {
-            const { student_id, course_id } = req.body;
-            const student = await Student.findOneBy({ id: Number(student_id) });
-            if (!student) {
-                throw new Error('Student not found.');
-            }
-
-            const course = await Course.findOne({
-                where: { id: Number(course_id) },
-                relations: ['students'],
-            });
-
-            if (!course) {
-                throw new Error('Course not found.');
-            }
-
-            if (course.students.some(existingStudent => existingStudent.id === student_id)) {
-                throw new Error('The student is already enrolled in this course.');
-            }
-
-            course.students.push(student);
-            const registro = await Course.save(course);
-            res.status(200).json(registro);
+            const data = await coursesService.associateStudent(Number(course_id), Number(student_id));
+            res.status(200).json(data);
 
         } catch (err) {
             if (err instanceof Error)
