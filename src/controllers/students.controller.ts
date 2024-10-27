@@ -1,16 +1,25 @@
 import { Request, Response, NextFunction } from 'express';
 import studentsService from '../services/students.service';
+import { client } from '../index';
 
 class StudentsController {
 
     async index(req: Request, res: Response, next: NextFunction): Promise<void> {
 
         try {
+            const cachedStudents = await client.get('students');
+            if (cachedStudents) {
+                res.status(200).json(JSON.parse(cachedStudents));
+                return;
+            }
+
             const data = await studentsService.index();
             if (data.length === 0) {
                 res.status(200).json({ message: 'No characters found.' });
                 return;
             }
+
+            await client.setEx('students', 60, JSON.stringify(data));
             res.status(200).json(data);
 
         } catch (error) {

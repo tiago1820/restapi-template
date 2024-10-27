@@ -1,15 +1,24 @@
 import { Request, Response, NextFunction } from "express";
 import coursesService from '../services/courses.service';
+import { client } from "../index";
 
 class CoursesController {
 
     async index(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
+            const cachedCourses = await client.get('courses');
+            if (cachedCourses) {
+                res.status(200).json(JSON.parse(cachedCourses));
+                return;
+            }
+
             const data = await coursesService.index();
             if (data.length === 0) {
                 res.status(200).json({ message: 'No courses found.' });
                 return;
             }
+
+            await client.setEx('courses', 60, JSON.stringify(data));
             res.status(200).json(data);
 
         } catch (error) {
