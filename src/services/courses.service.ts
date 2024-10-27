@@ -121,6 +121,31 @@ class CoursesService {
         }
     }
 
+    async associateTeacher(course_id: number, teacher_id: number) {
+        try {
+            const teacher = await Teacher.findOneBy({ id: teacher_id });
+            if (!teacher) {
+                throw new Error('Teacher not found.');
+            }
+
+            const course = await Course.findOne({
+                where: { id: course_id },
+                relations: ['teacher'],
+            });
+
+            if (!course) {
+                throw new Error('Course not found.');
+            }
+
+            course.teacher = teacher;
+            const data = await Course.save(course);
+            return data;
+            
+        } catch (error) {
+            throw new Error('Error associating the teacher with the course');
+        }
+    }
+
 }
 
 export default new CoursesService();

@@ -95,6 +95,19 @@ class CoursesController {
                 res.status(500).send(err.message);
         }
     }
+
+    async associateTeacher(req: Request, res: Response) {
+        const { course_id, teacher_id } = req.body;
+
+        try {
+            const data = await coursesService.associateTeacher(Number(course_id), Number(teacher_id));
+            res.status(200).json(data);
+        } catch (error) {
+            if (error instanceof Error)
+                res.status(500).send(error.message);
+        }
+    }
+
 }
 
 export default new CoursesController();
