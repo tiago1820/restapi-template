@@ -16,6 +16,10 @@ src                                 # Root directory of the source code
 │   ├── course.model.ts             # Model for courses
 │   ├── student.model.ts            # Model for students
 │   └── teacher.model.ts            # Model for teachers
+├── services                        # Contains business logic and database interactions
+│   ├── courses.services.ts         # Handles operations related to courses
+│   ├── students.services.ts        # Handles operations related to students
+│   └── teacher.services.ts         # Handles operations related to teachers
 └── routes                          # Definition of API routes
     ├── courses.routes.ts           # Routes for courses
     ├── students.routes.ts          # Routes for students
